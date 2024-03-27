@@ -8,9 +8,14 @@ namespace Jogo.Infrastructure.Repositories
     {
         public CategoriaRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<IList<Categoria>> ObterCategorias(int idCategoriaPai = 0)
+		public async Task<Categoria> ObterPorId(int idCategoria, string includeProperties = "", bool noTracking = true)
+		{
+			return await this.Get(x => !x.IdCategoriaPai.HasValue, includeProperties: includeProperties, noTracking: noTracking);
+		}
+
+		public async Task<IList<Categoria>> ObterCategorias(int idCategoriaPai = 0, string includeProperties = "", bool noTracking = true)
         {
-			if (idCategoriaPai > 0) return await this.List(x => x.IdCategoriaPai.HasValue && x.IdCategoriaPai == idCategoriaPai, noTracking: true);
+			if (idCategoriaPai > 0) return await this.List(x => x.IdCategoriaPai.HasValue && x.IdCategoriaPai == idCategoriaPai, includeProperties: includeProperties, noTracking: noTracking);
 
 			return await this.List(x => !x.IdCategoriaPai.HasValue, noTracking: true);
         }

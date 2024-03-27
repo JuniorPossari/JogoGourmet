@@ -42,12 +42,12 @@ namespace Jogo.Domain.Interfaces.Repositories
             CancellationToken cancellationToken = default
         );
 
-        void Add(T entity);
+        bool Add(T entity);
 
-        void Update(T entity);
+		bool Update(T entity);
 
-        void Remove(T entity);
+		bool Remove(T entity);
 
-        void Remove(Expression<Func<T, bool>> filter);
+		bool Remove(Expression<Func<T, bool>> filter);
     }
 }

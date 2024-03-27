@@ -116,26 +116,62 @@ namespace Jogo.Infrastructure.Repositories
             return await query.AsNoTracking().Skip(initialPosition).Take(itensPerPage).Select(keySelector).ToListAsync(cancellationToken);
         }
 
-        public void Add(T entity)
+        public bool Add(T entity)
         {
-            entity.DateAdded = DateTime.Now;
-            _context.Add(entity);
+            try
+            {
+				entity.DateAdded = DateTime.Now;
+				_context.Add(entity);
+                _context.SaveChanges();
+                return true;
+			}
+            catch
+            {
+                return false;
+            }
         }
 
-        public void Update(T entity)
+        public bool Update(T entity)
         {
-            entity.DateUpdated = DateTime.Now;
-            _context.Update(entity);
+			try
+			{
+				entity.DateUpdated = DateTime.Now;
+				_context.Update(entity);
+				_context.SaveChanges();
+				return true;
+			}
+			catch
+			{
+				return false;
+			}			
         }
 
-        public void Remove(T entity)
+        public bool Remove(T entity)
         {
-            _context.Remove(entity);
+			try
+			{
+				_context.Remove(entity);
+				_context.SaveChanges();
+				return true;
+			}
+			catch
+			{
+				return false;
+			}			
         }
 
-        public void Remove(Expression<Func<T, bool>> filter)
+        public bool Remove(Expression<Func<T, bool>> filter)
         {
-            _context.Remove(filter);
-        }
+			try
+			{
+				_context.Remove(filter);
+				_context.SaveChanges();
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
     }
 }
