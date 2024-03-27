@@ -16,6 +16,7 @@ namespace Jogo.Infrastructure
 			services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlite(connectionString));
 
 			services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+			services.AddScoped<IPratoRepository, PratoRepository>();
 		}
 	}
 }
