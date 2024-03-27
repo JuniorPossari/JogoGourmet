@@ -25,7 +25,9 @@ namespace Jogo.API
 				context.Database.Migrate();
 			}
 
-			host.Run();
+			Console.Clear();
+			Console.WriteLine("Aperte uma tecla para continuar...");	
+			Console.ReadKey();
 		}
 	}
 }

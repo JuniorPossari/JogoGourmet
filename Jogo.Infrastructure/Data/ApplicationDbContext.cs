@@ -29,6 +29,11 @@ namespace Jogo.Infrastructure.Data
         {
 			base.OnModelCreating(modelBuilder);
 
+			modelBuilder.Entity<Categoria>(entity =>
+			{
+				entity.HasOne(d => d.CategoriaPai).WithMany(p => p.SubCategorias).HasConstraintName("FK_SubCategoria_CategoriaPai");
+			});
+
 			modelBuilder.Entity<Prato>(entity =>
 			{
 				entity.HasOne(d => d.Categoria).WithMany(p => p.Pratos).HasConstraintName("FK_Prato_Categoria");
