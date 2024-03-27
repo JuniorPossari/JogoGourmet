@@ -1,4 +1,7 @@
 ﻿using Jogo.Infrastructure;
+using Jogo.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Jogo.API
@@ -15,6 +18,12 @@ namespace Jogo.API
 			InfrastructureExtensions.ConfigureInfrastructure(services, config);
 
 			var host = builder.Build();
+
+			using (var scope = host.Services.CreateScope())
+			{
+				var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+				context.Database.Migrate();
+			}
 
 			host.Run();
 		}
