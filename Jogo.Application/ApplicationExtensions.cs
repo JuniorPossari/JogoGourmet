@@ -9,7 +9,7 @@ namespace Jogo.Application
 	{
 		public static void ConfigureApplication(this IServiceCollection services, IConfiguration config)
 		{
-			services.AddSingleton<IJogoService, JogoService>();
+			services.AddScoped<IJogoService, JogoService>();
 		}
 	}
 }

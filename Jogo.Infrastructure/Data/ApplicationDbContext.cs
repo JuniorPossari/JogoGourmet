@@ -31,11 +31,15 @@ namespace Jogo.Infrastructure.Data
 
 			modelBuilder.Entity<Categoria>(entity =>
 			{
+				entity.Property(d => d.DateAdded).HasDefaultValueSql("datetime('now')");
+
 				entity.HasOne(d => d.CategoriaPai).WithMany(p => p.SubCategorias).HasConstraintName("FK_SubCategoria_CategoriaPai");
 			});
 
 			modelBuilder.Entity<Prato>(entity =>
 			{
+				entity.Property(d => d.DateAdded).HasDefaultValueSql("datetime('now')");
+
 				entity.HasOne(d => d.Categoria).WithMany(p => p.Pratos).HasConstraintName("FK_Prato_Categoria");
 			});
 		}

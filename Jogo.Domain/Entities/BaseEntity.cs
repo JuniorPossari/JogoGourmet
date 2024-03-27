@@ -2,7 +2,7 @@
 {
     public abstract class BaseEntity
     {
-        public DateTimeOffset DateAdded { get; set; }
-        public DateTimeOffset DateUpdated { get; set; }
+        public DateTime DateAdded { get; set; }
+        public DateTime? DateUpdated { get; set; }
     }
 }

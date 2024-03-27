@@ -118,13 +118,13 @@ namespace Jogo.Infrastructure.Repositories
 
         public void Add(T entity)
         {
-            entity.DateAdded = DateTimeOffset.UtcNow;
+            entity.DateAdded = DateTime.Now;
             _context.Add(entity);
         }
 
         public void Update(T entity)
         {
-            entity.DateUpdated = DateTimeOffset.UtcNow;
+            entity.DateUpdated = DateTime.Now;
             _context.Update(entity);
         }
 
