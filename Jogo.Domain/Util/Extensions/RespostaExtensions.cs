@@ -17,7 +17,7 @@ namespace Jogo.Domain.Util.Extensions
 
 			var valida = !string.IsNullOrEmpty(resposta) && resposta.Length >= 3 && resposta.Length <= 50;
 
-			if (!valida) Console.WriteLine($"Resposta inválida! Sua resposta deve ter entre 3 e 30 caracteres.");
+			if (!valida) Console.WriteLine($" * Resposta inválida! [a resposta deve ter entre 3 e 30 caracteres]");
 
 			return valida;
 		}
@@ -26,7 +26,7 @@ namespace Jogo.Domain.Util.Extensions
 		{
 			var valida = !string.IsNullOrEmpty(resposta) && (resposta.Equals("S", StringComparison.OrdinalIgnoreCase) || resposta.Equals("N", StringComparison.OrdinalIgnoreCase));
 
-			if (!valida) Console.WriteLine($"Resposta inválida! Responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO.");
+			if (!valida) Console.WriteLine($" * Resposta inválida! [responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO]");
 
 			return valida;
 		}

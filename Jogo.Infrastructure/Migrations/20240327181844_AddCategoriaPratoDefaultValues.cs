@@ -11,7 +11,7 @@ namespace Jogo.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
 			var sql =
-            """
+			"""
             -- Inserção das 5 categorias principais
             INSERT INTO Categoria (Nome, IdCategoriaPai) VALUES 
             ('Massa', NULL),
@@ -63,15 +63,15 @@ namespace Jogo.Infrastructure.Migrations
             ('Torta', 3);
 
             INSERT INTO Prato (Nome, IdCategoria) VALUES 
-            ('Chocolate', 10),
-            ('Baunilha', 10),
-            ('Limão', 11),
-            ('Morango', 11);
+            ('Sorvete de Chocolate', 10),
+            ('Sorvete de Baunilha', 10),
+            ('Torta de Limão', 11),
+            ('Torta de Morango', 11);
 
             -- Bebida
             INSERT INTO Categoria (Nome, IdCategoriaPai) VALUES 
-            ('Alcoólica', 4),
-            ('Não Alcoólica', 4);
+            ('Bebida Alcoólica', 4),
+            ('Bebida Não Alcoólica', 4);
 
             INSERT INTO Prato (Nome, IdCategoria) VALUES 
             ('Vinho', 12),
@@ -81,8 +81,8 @@ namespace Jogo.Infrastructure.Migrations
 
             -- Salada
             INSERT INTO Categoria (Nome, IdCategoriaPai) VALUES 
-            ('Verde', 5),
-            ('De Frutas', 5);
+            ('Salada Verde', 5),
+            ('Salada de Frutas', 5);
 
             INSERT INTO Prato (Nome, IdCategoria) VALUES 
             ('Caesar', 14),

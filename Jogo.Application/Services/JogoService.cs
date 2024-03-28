@@ -28,23 +28,43 @@ namespace Jogo.Application.Services
 			_pratoRepository = pratoRepository;
 		}
 
-		public async Task Iniciar()
+		private void LimparTela()
 		{
 			Console.Clear();
-			Console.WriteLine("Pense em um prato e aperte qualquer tecla para iniciar!");
+			Console.WriteLine();
+			Console.WriteLine();
+			Console.WriteLine(
+			"""
+			     ██╗ ██████╗  ██████╗  ██████╗      ██████╗  ██████╗ ██╗   ██╗██████╗ ███╗   ███╗███████╗████████╗
+			     ██║██╔═══██╗██╔════╝ ██╔═══██╗    ██╔════╝ ██╔═══██╗██║   ██║██╔══██╗████╗ ████║██╔════╝╚══██╔══╝
+			     ██║██║   ██║██║  ███╗██║   ██║    ██║  ███╗██║   ██║██║   ██║██████╔╝██╔████╔██║█████╗     ██║   
+			██   ██║██║   ██║██║   ██║██║   ██║    ██║   ██║██║   ██║██║   ██║██╔══██╗██║╚██╔╝██║██╔══╝     ██║   
+			╚█████╔╝╚██████╔╝╚██████╔╝╚██████╔╝    ╚██████╔╝╚██████╔╝╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗   ██║   
+			 ╚════╝  ╚═════╝  ╚═════╝  ╚═════╝      ╚═════╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝   ╚═╝   
+			                                                                                                      
+			""");
+			Console.WriteLine();
+			Console.WriteLine();
+		}
+
+		public async Task Iniciar()
+		{
+			this.LimparTela();
+			Console.WriteLine(" * Pense em um prato! [aperte qualquer tecla para iniciar]");
+			Console.Write("--> ");
 			Console.ReadKey();
 
 			while (!_acertouPrato && !_desistiu) await this.VerificarCategorias();
 
 			if (_acertouPrato)
 			{
-				Console.Clear();
-				Console.WriteLine("Acertei!! Fim de jogo.. Muito obrigado por jogar!! :D");
+				this.LimparTela();
+				Console.WriteLine(" * Acertei!! Fim de jogo.. Muito obrigado por jogar!! :D");
 			}
 			else
 			{
-				Console.Clear();
-				Console.WriteLine("Eu desisto!! :( Em qual prato você estava pensando?");
+				this.LimparTela();
+				Console.WriteLine(" * Eu desisto!! :( Em qual prato você estava pensando?");
 
 				var nomePrato = this.ObterResposta();
 
@@ -54,16 +74,16 @@ namespace Jogo.Application.Services
 				{
 					var categoriaSelecionada = await _categoriaRepository.ObterPorId(_idCategoriaSelecionada);
 
-					Console.Clear();
-					Console.WriteLine($"Pensando dentro da categoria ({categoriaSelecionada.Nome}), qual sub categoria você acha que o prato ({nomePrato}) se encaixa?");
-					Console.WriteLine("Caso acredite que não possua uma sub categoria para esse prato, apenas aperte qualquer tecla para continuar.");
+					this.LimparTela();
+					Console.WriteLine($" * Pensando dentro da categoria [{categoriaSelecionada.Nome}], qual sub categoria você acha que o prato ({nomePrato}) se encaixa?");
+					Console.WriteLine(" * [caso não possua uma sub categoria para esse prato, aperte qualquer tecla para continuar]");
 
 					nomeCategoria = this.ObterResposta(permiteRespostaVazia: true);
 				}
 				else
 				{
-					Console.Clear();
-					Console.WriteLine($"Em qual categoria você acha que o prato ({nomePrato}) se encaixa?");
+					this.LimparTela();
+					Console.WriteLine($" * Em qual categoria você acha que o prato [{nomePrato}] se encaixa?");
 
 					nomeCategoria = this.ObterResposta();
 				}
@@ -76,10 +96,10 @@ namespace Jogo.Application.Services
 		{
 			var categorias = await _categoriaRepository.ObterCategorias(_idCategoriaPai);
 
-			foreach (var categoria in categorias)
+			foreach (var categoria in categorias.OrderBy(c => Guid.NewGuid()).ToArray())
 			{
-				Console.Clear();
-				Console.WriteLine($"O prato que você esta pensando é {categoria.Nome}? (Responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO).");
+				this.LimparTela();
+				Console.WriteLine($" * O prato que você esta pensando é {categoria.Nome}? [responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO]");
 
 				var resposta = this.ObterResposta(apenasSimOuNao: true);
 
@@ -90,19 +110,25 @@ namespace Jogo.Application.Services
 				}
 			}
 
+			if (_idCategoriaPai > 0 && _idCategoriaSelecionada > 0 && _idCategoriaPai == _idCategoriaSelecionada)
+			{
+				_desistiu = true;
+				return;
+			}
+
 			await this.VerificarPratos();
 		}
 
 		private async Task VerificarPratos()
 		{
-			if (_idCategoriaSelecionada != 0)
+			if (_idCategoriaSelecionada > 0)
 			{
 				var pratos = await _pratoRepository.ObterPorIdCategoria(_idCategoriaSelecionada);
 
-				foreach (var prato in pratos)
+				foreach (var prato in pratos.OrderBy(c => Guid.NewGuid()).ToArray())
 				{
-					Console.Clear();
-					Console.WriteLine($"O prato que você esta pensando é {prato.Nome}? (Responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO).");
+					this.LimparTela();
+					Console.WriteLine($" * O prato que você esta pensando é {prato.Nome}? [responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO]");
 
 					var resposta = this.ObterResposta(apenasSimOuNao: true);
 
@@ -113,7 +139,7 @@ namespace Jogo.Application.Services
 					}
 				}
 
-				if (await _categoriaRepository.PossuiSubCategorias(_idCategoriaSelecionada))
+				if (_idCategoriaPai != _idCategoriaSelecionada && await _categoriaRepository.PossuiSubCategorias(_idCategoriaSelecionada))
 				{
 					_idCategoriaPai = _idCategoriaSelecionada;
 					return;
@@ -125,15 +151,24 @@ namespace Jogo.Application.Services
 
 		private string ObterResposta(bool apenasSimOuNao = false, bool permiteRespostaVazia = false)
 		{
+			Console.Write("--> ");
 			var resposta = Console.ReadLine().Formatar();
 
 			if (apenasSimOuNao)
 			{
-				while (!resposta.ValidaSN()) resposta = Console.ReadLine();
+				while (!resposta.ValidaSN())
+				{
+					Console.Write("--> ");
+					resposta = Console.ReadLine();
+				}
 			}
 			else
 			{
-				while (!resposta.Valida(permiteRespostaVazia)) resposta = Console.ReadLine();
+				while (!resposta.Valida(permiteRespostaVazia))
+				{
+					Console.Write("--> ");
+					resposta = Console.ReadLine();
+				}
 			}
 
 			return resposta;
@@ -148,14 +183,14 @@ namespace Jogo.Application.Services
 			if (!string.IsNullOrEmpty(nomeCategoria))
 			{
 				categoria.Nome = nomeCategoria;
-				categoria.IdCategoriaPai = _idCategoriaSelecionada;
+				if (_idCategoriaSelecionada > 0) categoria.IdCategoriaPai = _idCategoriaSelecionada;
 
 				sucesso = _categoriaRepository.Add(categoria);
 
 				if (!sucesso)
 				{
-					Console.Clear();
-					Console.WriteLine($"Erro ao salvar a nova categoria ({nomeCategoria}) do prato ({nomePrato})!");
+					this.LimparTela();
+					Console.WriteLine($" * Erro ao salvar a nova categoria [{nomeCategoria}] do prato [{nomePrato}]!");
 					return;
 				}
 			}
@@ -169,13 +204,13 @@ namespace Jogo.Application.Services
 
 			if (!sucesso)
 			{
-				Console.Clear();
-				Console.WriteLine($"Erro ao salvar o novo prato ({nomePrato}) da categoria ({nomeCategoria})!");
+				this.LimparTela();
+				Console.WriteLine($" * Erro ao salvar o novo prato [{nomePrato}] da categoria [{nomeCategoria}]!");
 				return;
 			}
 
-			Console.Clear();
-			Console.WriteLine($"Adicionamos o prato ({nomePrato}) a categoria ({nomeCategoria}). Muito obrigado por jogar!! :D");
+			this.LimparTela();
+			Console.WriteLine($" * Adicionamos o prato [{nomePrato}] a categoria [{categoria.Nome}]. Muito obrigado por jogar!! :D");
 		}
 	}
 }

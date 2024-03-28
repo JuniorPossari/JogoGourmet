@@ -125,7 +125,7 @@ namespace Jogo.Infrastructure.Repositories
                 _context.SaveChanges();
                 return true;
 			}
-            catch
+            catch (Exception ex)
             {
                 return false;
             }
@@ -140,7 +140,7 @@ namespace Jogo.Infrastructure.Repositories
 				_context.SaveChanges();
 				return true;
 			}
-			catch
+			catch (Exception ex)
 			{
 				return false;
 			}			
@@ -154,7 +154,7 @@ namespace Jogo.Infrastructure.Repositories
 				_context.SaveChanges();
 				return true;
 			}
-			catch
+			catch (Exception ex)
 			{
 				return false;
 			}			
@@ -168,7 +168,7 @@ namespace Jogo.Infrastructure.Repositories
 				_context.SaveChanges();
 				return true;
 			}
-			catch
+			catch (Exception ex)
 			{
 				return false;
 			}

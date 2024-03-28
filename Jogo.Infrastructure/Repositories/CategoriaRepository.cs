@@ -10,7 +10,7 @@ namespace Jogo.Infrastructure.Repositories
 
 		public async Task<Categoria> ObterPorId(int idCategoria, string includeProperties = "", bool noTracking = true)
 		{
-			return await this.Get(x => !x.IdCategoriaPai.HasValue, includeProperties: includeProperties, noTracking: noTracking);
+			return await this.Get(x => x.Id == idCategoria, includeProperties: includeProperties, noTracking: noTracking);
 		}
 
 		public async Task<IList<Categoria>> ObterCategorias(int idCategoriaPai = 0, string includeProperties = "", bool noTracking = true)
