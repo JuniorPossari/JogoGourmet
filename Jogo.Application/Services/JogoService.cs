@@ -2,11 +2,13 @@
 using Jogo.Domain.Interfaces.Repositories;
 using Jogo.Domain.Interfaces.Services;
 using Jogo.Domain.Util.Extensions;
+using System.IO;
 
 namespace Jogo.Application.Services
 {
 	public class JogoService : IJogoService
 	{
+		private bool _continuarJogando;
 		private bool _acertouPrato;
 		private bool _desistiu;
 		private int _idCategoriaPai;
@@ -20,12 +22,17 @@ namespace Jogo.Application.Services
 			IPratoRepository pratoRepository
 		)
 		{
+			_continuarJogando = true;
+			_categoriaRepository = categoriaRepository;
+			_pratoRepository = pratoRepository;
+		}
+
+		private void LimparDados()
+		{
 			_acertouPrato = false;
 			_desistiu = false;
 			_idCategoriaPai = 0;
 			_idCategoriaSelecionada = 0;
-			_categoriaRepository = categoriaRepository;
-			_pratoRepository = pratoRepository;
 		}
 
 		private void LimparTela()
@@ -49,46 +56,59 @@ namespace Jogo.Application.Services
 
 		public async Task Iniciar()
 		{
-			this.LimparTela();
-			Console.WriteLine(" * Pense em um prato! [aperte qualquer tecla para iniciar]");
-			Console.Write("--> ");
-			Console.ReadKey();
-
-			while (!_acertouPrato && !_desistiu) await this.VerificarCategorias();
-
-			if (_acertouPrato)
+			while (_continuarJogando)
 			{
+				this.LimparDados();
+
 				this.LimparTela();
-				Console.WriteLine(" * Acertei!! Fim de jogo.. Muito obrigado por jogar!! :D");
-			}
-			else
-			{
-				this.LimparTela();
-				Console.WriteLine(" * Eu desisto!! :( Em qual prato você estava pensando?");
+				Console.WriteLine(" * Pense em um prato! [aperte qualquer tecla para iniciar]");
+				Console.Write("--> ");
+				Console.ReadKey();
 
-				var nomePrato = this.ObterResposta();
+				while (!_acertouPrato && !_desistiu) await this.VerificarCategorias();
 
-				var nomeCategoria = "";
-
-				if (_idCategoriaSelecionada > 0)
+				if (_acertouPrato)
 				{
-					var categoriaSelecionada = await _categoriaRepository.ObterPorId(_idCategoriaSelecionada);
-
 					this.LimparTela();
-					Console.WriteLine($" * Pensando dentro da categoria [{categoriaSelecionada.Nome}], qual sub categoria você acha que o prato ({nomePrato}) se encaixa?");
-					Console.WriteLine(" * [caso não possua uma sub categoria para esse prato, aperte qualquer tecla para continuar]");
-
-					nomeCategoria = this.ObterResposta(permiteRespostaVazia: true);
+					Console.WriteLine(" * Acertei!! Fim de jogo.. Muito obrigado por jogar!! :D");
 				}
 				else
 				{
 					this.LimparTela();
-					Console.WriteLine($" * Em qual categoria você acha que o prato [{nomePrato}] se encaixa?");
+					Console.WriteLine(" * Eu desisto!! :( Em qual prato você estava pensando?");
 
-					nomeCategoria = this.ObterResposta();
+					var nomePrato = this.ObterResposta();
+
+					var nomeCategoria = "";
+
+					if (_idCategoriaSelecionada > 0)
+					{
+						var categoriaSelecionada = await _categoriaRepository.ObterPorId(_idCategoriaSelecionada);
+
+						this.LimparTela();
+						Console.WriteLine($" * Pensando dentro da categoria [{categoriaSelecionada.Nome}], qual sub categoria você acha que o prato ({nomePrato}) se encaixa?");
+						Console.WriteLine(" * [caso não possua uma sub categoria para esse prato, aperte qualquer tecla para continuar]");
+
+						nomeCategoria = this.ObterResposta(permiteRespostaVazia: true);
+					}
+					else
+					{
+						this.LimparTela();
+						Console.WriteLine($" * Em qual categoria você acha que o prato [{nomePrato}] se encaixa?");
+
+						nomeCategoria = this.ObterResposta();
+					}
+
+					await this.AdicionarNovaCategoriaPrato(nomeCategoria, nomePrato);
 				}
 
-				await this.AdicionarNovaCategoriaPrato(nomeCategoria, nomePrato);
+				Console.WriteLine();
+				Console.WriteLine($" * Deseja continuar jogando?");
+				Console.WriteLine($" * [responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO]");
+
+				var resposta = this.ObterResposta(apenasSimOuNao: true);
+
+				_continuarJogando = resposta.Sim();
 			}
 		}
 
@@ -99,7 +119,8 @@ namespace Jogo.Application.Services
 			foreach (var categoria in categorias.OrderBy(c => Guid.NewGuid()).ToArray())
 			{
 				this.LimparTela();
-				Console.WriteLine($" * O prato que você esta pensando é {categoria.Nome}? [responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO]");
+				Console.WriteLine($" * O prato que você esta pensando é um/uma {categoria.Nome}?");
+				Console.WriteLine($" * [responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO]");
 
 				var resposta = this.ObterResposta(apenasSimOuNao: true);
 
@@ -128,7 +149,8 @@ namespace Jogo.Application.Services
 				foreach (var prato in pratos.OrderBy(c => Guid.NewGuid()).ToArray())
 				{
 					this.LimparTela();
-					Console.WriteLine($" * O prato que você esta pensando é {prato.Nome}? [responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO]");
+					Console.WriteLine($" * O prato que você esta pensando é {prato.Nome}?");
+					Console.WriteLine($" * [responda apenas com a letra 'S' para SIM ou letra 'N' para NÃO]");
 
 					var resposta = this.ObterResposta(apenasSimOuNao: true);
 
